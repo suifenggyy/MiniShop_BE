@@ -209,7 +209,8 @@ public class UserInfoController {
         updateUser.setSelectPackageName(request.getSelectPackageName());
         updateUser.setDeliveryUserName(request.getDeliveryUserName());
         updateUser.setDeliveryPhone(request.getDeliveryPhone());
-        updateUser.setStatus("1"); // 设置状态为已提交
+        updateUser.setStatus("2"); // 设置状态为已提交
+        updateUser.setPostInfo("[{\"delivery_id\":\"464577584850772\"},{\"delivery_id\":\"77128481867058\"},{\"delivery_id\":\"YT8703670753704\"}]");
 
         boolean success = userInfoService.updateUserInfo(updateUser);
         if (success) {
@@ -218,6 +219,38 @@ public class UserInfoController {
             return new ApiResponse(200, "", updatedUserInfo.orElse(null));
         } else {
             return new ApiResponse(504, "更新配送信息失败", null);
+        }
+    }
+
+    /**
+     * 重置用户状态
+     * @param uid 用户ID
+     * @return API response json
+     */
+    @PostMapping("/resetStatus/{uid}")
+    public ApiResponse resetStatus(@PathVariable Long uid) {
+        logger.info("/api/userinfo/resetStatus/{} post request", uid);
+
+        if (uid == null) {
+            return new ApiResponse(401, "uid_empty", null);
+        }
+
+        // 根据uid查询数户是否存在
+        Optional<UserInfo> userInfo = userInfoService.getUserInfoById(uid);
+        if (!userInfo.isPresent()) {
+            return new ApiResponse(501, "uid_not_match", null);
+        }
+
+        // 更新status为0
+        UserInfo updateUser = new UserInfo();
+        updateUser.setUid(uid);
+        updateUser.setStatus("0");
+
+        boolean success = userInfoService.updateUserInfo(updateUser);
+        if (success) {
+            return new ApiResponse(200, "status reset successfully", null);
+        } else {
+            return new ApiResponse(504, "重置状态失败", null);
         }
     }
 }
