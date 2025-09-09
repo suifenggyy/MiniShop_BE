@@ -7,6 +7,8 @@ import com.tencent.wxcloudrun.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.NumberUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,20 +42,8 @@ public class UserInfoController {
         if (userInfo.isPresent()) {
             return ApiResponse.ok(userInfo.get());
         } else {
-            return ApiResponse.error("用户不存在");
+            return ApiResponse.error(2503, "用户不存在");
         }
-    }
-
-    /**
-     * 查询所有用户信息
-     * @return API response json
-     */
-    @GetMapping
-    public ApiResponse getAllUserInfo() {
-        logger.info("/api/userinfo get all request");
-
-        List<UserInfo> userInfoList = userInfoService.getAllUserInfo();
-        return ApiResponse.ok(userInfoList);
     }
 
     /**
@@ -117,29 +107,6 @@ public class UserInfoController {
     }
 
     /**
-     * 删除用户信息
-     * @param uid 用户ID
-     * @return API response json
-     */
-    @DeleteMapping("/{uid}")
-    public ApiResponse deleteUserInfo(@PathVariable Long uid) {
-        logger.info("/api/userinfo/{} delete request", uid);
-
-        // 检查用户是否存在
-        Optional<UserInfo> existingUser = userInfoService.getUserInfoById(uid);
-        if (!existingUser.isPresent()) {
-            return ApiResponse.error("用户不存在");
-        }
-
-        boolean success = userInfoService.deleteUserInfo(uid);
-        if (success) {
-            return ApiResponse.ok("删除成功");
-        } else {
-            return ApiResponse.error("删除用户失败");
-        }
-    }
-
-    /**
      * 检查用户信息
      * @param request 用户信息请求体
      * @return API response json
@@ -185,11 +152,11 @@ public class UserInfoController {
                    request.getUid(), request.getUserName());
 
         if (request.getUid() == null) {
-            return new ApiResponse(401, "uid_empty", null);
+            return new ApiResponse(2401, "uid_empty", null);
         }
 
         if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
-            return new ApiResponse(402, "username_empty", null);
+            return new ApiResponse(2402, "username_empty", null);
         }
 
         // 根据uid查询数据库
@@ -197,26 +164,21 @@ public class UserInfoController {
 
         // 若不存在，返回错误信息
         if (!userInfo.isPresent()) {
-            return new ApiResponse(501, "uid_not_match", null);
+            return new ApiResponse(2501, "uid_not_match", null);
         }
 
         // 若存在，但是用户姓名与传入的不一致
         UserInfo existingUser = userInfo.get();
         if (!request.getUserName().equals(existingUser.getUserName())) {
-            return new ApiResponse(502, "username_not_match", null);
+            return new ApiResponse(2502, "username_not_match", null);
         }
 
         // 检查status字段值是否大于10
         String status = existingUser.getStatus();
-        if (status != null && !status.isEmpty()) {
-            try {
-                int statusValue = Integer.parseInt(status);
-                if (statusValue > 10) {
-                    return new ApiResponse(601, "status_error", status);
-                }
-            } catch (NumberFormatException e) {
-                // 如果status不是数字，继续处理
-                logger.warn("Status field is not a number: {}", status);
+        if (status != null && !status.trim().isEmpty()) {
+            int statusValue = Integer.parseInt(status);
+            if (statusValue > 0) {
+                return new ApiResponse(601, "status_error", status);
             }
         }
 
