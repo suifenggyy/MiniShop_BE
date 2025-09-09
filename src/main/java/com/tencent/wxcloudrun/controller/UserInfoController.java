@@ -78,11 +78,7 @@ public class UserInfoController {
         UserInfo userInfo = new UserInfo();
         userInfo.setUid(request.getUid());
         userInfo.setUserName(request.getUserName());
-        userInfo.setAddress(request.getAddress());
-        userInfo.setSelectSetId(request.getSelectSetId());
-        userInfo.setSelectTs(request.getSelectTs());
-        userInfo.setPostInfo(request.getPostInfo());
-        userInfo.setStatus(request.getStatus());
+
 
         boolean success = userInfoService.insertUserInfo(userInfo);
         if (success) {
@@ -111,11 +107,6 @@ public class UserInfoController {
         UserInfo userInfo = new UserInfo();
         userInfo.setUid(uid);
         userInfo.setUserName(request.getUserName());
-        userInfo.setAddress(request.getAddress());
-        userInfo.setSelectSetId(request.getSelectSetId());
-        userInfo.setSelectTs(request.getSelectTs());
-        userInfo.setPostInfo(request.getPostInfo());
-        userInfo.setStatus(request.getStatus());
 
         boolean success = userInfoService.updateUserInfo(userInfo);
         if (success) {
@@ -145,6 +136,125 @@ public class UserInfoController {
             return ApiResponse.ok("删除成功");
         } else {
             return ApiResponse.error("删除用户失败");
+        }
+    }
+
+    /**
+     * 检查用户信息
+     * @param request 用户信息请求体
+     * @return API response json
+     */
+    @PostMapping("/checkUser")
+    public ApiResponse checkUser(@RequestBody UserInfoRequest request) {
+        logger.info("/api/userinfo/checkUser post request, uid: {}, userName: {}", request.getUid(), request.getUserName());
+
+        if (request.getUid() == null) {
+            return new ApiResponse(401, "uid_empty", null);
+        }
+
+        if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
+            return new ApiResponse(402, "username_empty", null);
+        }
+
+        // 根据uid查询数据库
+        Optional<UserInfo> userInfo = userInfoService.getUserInfoById(request.getUid());
+
+        // 若不存在，返回错误信息
+        if (!userInfo.isPresent()) {
+            return new ApiResponse(501, "uid_not_match", null);
+        }
+
+        // 若存在，但是用户姓名与传入的不一致
+        UserInfo existingUser = userInfo.get();
+        if (!request.getUserName().equals(existingUser.getUserName())) {
+            return new ApiResponse(502, "username_not_match", null);
+        }
+
+        // 匹配则返回成功
+        return new ApiResponse(200, "", existingUser);
+    }
+
+    /**
+     * 确认配送信息
+     * @param request 用户信息请求体
+     * @return API response json
+     */
+    @PostMapping("/confirmDeliveryInfo")
+    public ApiResponse confirmDeliveryInfo(@RequestBody UserInfoRequest request) {
+        logger.info("/api/userinfo/confirmDeliveryInfo post request, uid: {}, userName: {}",
+                   request.getUid(), request.getUserName());
+
+        if (request.getUid() == null) {
+            return new ApiResponse(401, "uid_empty", null);
+        }
+
+        if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
+            return new ApiResponse(402, "username_empty", null);
+        }
+
+        // 根据uid查询数据库
+        Optional<UserInfo> userInfo = userInfoService.getUserInfoById(request.getUid());
+
+        // 若不存在，返回错误信息
+        if (!userInfo.isPresent()) {
+            return new ApiResponse(501, "uid_not_match", null);
+        }
+
+        // 若存在，但是用户姓名与传入的不一致
+        UserInfo existingUser = userInfo.get();
+        if (!request.getUserName().equals(existingUser.getUserName())) {
+            return new ApiResponse(502, "username_not_match", null);
+        }
+
+        // 检查status字段值是否大于10
+        String status = existingUser.getStatus();
+        if (status != null && !status.isEmpty()) {
+            try {
+                int statusValue = Integer.parseInt(status);
+                if (statusValue > 10) {
+                    return new ApiResponse(601, "status_error", status);
+                }
+            } catch (NumberFormatException e) {
+                // 如果status不是数字，继续处理
+                logger.warn("Status field is not a number: {}", status);
+            }
+        }
+
+        // 拼接配送信息作为地址
+        StringBuilder addressBuilder = new StringBuilder();
+        if (request.getDeliveryUserName() != null && !request.getDeliveryUserName().trim().isEmpty()) {
+            addressBuilder.append(request.getDeliveryUserName());
+        }
+        if (request.getDeliveryPhone() != null && !request.getDeliveryPhone().trim().isEmpty()) {
+            if (addressBuilder.length() > 0) {
+                addressBuilder.append("||");
+            }
+            addressBuilder.append(request.getDeliveryPhone());
+        }
+        if (request.getDeliveryAddress() != null && !request.getDeliveryAddress().trim().isEmpty()) {
+            if (addressBuilder.length() > 0) {
+                addressBuilder.append("||");
+            }
+            addressBuilder.append(request.getDeliveryAddress());
+        }
+
+        String newAddress = addressBuilder.toString();
+        if (newAddress.isEmpty()) {
+            return new ApiResponse(503, "配送信息不能为空", null);
+        }
+
+        // 更新数据库中的address字段
+        UserInfo updateUser = new UserInfo();
+        updateUser.setUid(request.getUid());
+        updateUser.setAddress(newAddress);
+
+        boolean success = userInfoService.updateUserInfo(updateUser);
+        if (success) {
+            // 返回更新后的用户信息
+            Optional<UserInfo> updatedUserInfo = userInfoService.getUserInfoById(request.getUid());
+            return new ApiResponse(200, "", updatedUserInfo.orElse(null));
+        } else {
+            return new ApiResponse(504, "更新配送信息失败", null);
         }
     }
 }

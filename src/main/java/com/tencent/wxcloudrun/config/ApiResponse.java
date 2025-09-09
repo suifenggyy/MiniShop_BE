@@ -11,7 +11,7 @@ public final class ApiResponse {
   private String errorMsg;
   private Object data;
 
-  private ApiResponse(int code, String errorMsg, Object data) {
+  public ApiResponse(Integer code, String errorMsg, Object data) {
     this.code = code;
     this.errorMsg = errorMsg;
     this.data = data;
@@ -26,6 +26,6 @@ public final class ApiResponse {
   }
 
   public static ApiResponse error(String errorMsg) {
-    return new ApiResponse(0, errorMsg, new HashMap<>());
+    return new ApiResponse(-1, errorMsg, new HashMap<>());
   }
 }

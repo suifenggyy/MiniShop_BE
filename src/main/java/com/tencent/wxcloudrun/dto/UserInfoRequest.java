@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class UserInfoRequest {
@@ -11,13 +12,12 @@ public class UserInfoRequest {
 
     private String userName;
 
-    private String address;
+    private String deliveryAddress;
 
-    private Integer selectSetId;
+    private String deliveryPhone;
 
-    private LocalDateTime selectTs;
+    private String deliveryUserName;
 
-    private String postInfo;
-
-    private String status;
+    private List<String> deliveryIds;
 }
+
