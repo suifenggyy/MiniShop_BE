@@ -7,30 +7,40 @@
         <id column="uid" property="uid" jdbcType="BIGINT"/>
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="address" property="address" jdbcType="VARCHAR"/>
-        <result column="select_set_id" property="selectSetId" jdbcType="INTEGER"/>
+        <result column="select_package_id" property="selectPackageId" jdbcType="INTEGER"/>
         <result column="select_ts" property="selectTs" jdbcType="TIMESTAMP"/>
         <result column="post_info" property="postInfo" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="select_package_name" property="selectPackageName" jdbcType="VARCHAR"/>
+        <result column="delivery_user_name" property="deliveryUserName" jdbcType="VARCHAR"/>
+        <result column="delivery_phone" property="deliveryPhone" jdbcType="VARCHAR"/>
+        <result column="delivery_time" property="deliveryTime" jdbcType="TIMESTAMP"/>
+        <result column="valid" property="valid" jdbcType="VARCHAR"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!-- 根据ID查询用户信息 -->
     <select id="getUserInfoById" resultMap="BaseResultMap">
-        SELECT uid, user_name, address, select_set_id, select_ts, post_info, status
+        SELECT uid, user_name, address, select_package_id, select_ts, post_info, status,
+               select_package_name, delivery_user_name, delivery_phone, delivery_time, valid, gmt_modify
         FROM user_info
         WHERE uid = #{uid}
     </select>
 
     <!-- 查询所有用户信息 -->
     <select id="getAllUserInfo" resultMap="BaseResultMap">
-        SELECT uid, user_name, address, select_set_id, select_ts, post_info, status
+        SELECT uid, user_name, address, select_package_id, select_ts, post_info, status,
+               select_package_name, delivery_user_name, delivery_phone, delivery_time, valid, gmt_modify
         FROM user_info
         ORDER BY uid DESC
     </select>
 
     <!-- 插入用户信息 -->
     <insert id="insertUserInfo">
-        INSERT INTO user_info (uid, user_name, address, select_set_id, select_ts, post_info, status)
-        VALUES (#{uid}, #{userName}, #{address}, #{selectSetId}, #{selectTs}, #{postInfo}, #{status})
+        INSERT INTO user_info (uid, user_name, address, select_package_id, select_ts, post_info, status,
+                              select_package_name, delivery_user_name, delivery_phone, delivery_time, valid)
+        VALUES (#{uid}, #{userName}, #{address}, #{selectPackageId}, #{selectTs}, #{postInfo}, #{status},
+                #{selectPackageName}, #{deliveryUserName}, #{deliveryPhone}, #{deliveryTime}, #{valid})
     </insert>
 
     <!-- 更新用户信息 -->
@@ -40,11 +50,11 @@
             <if test="userName != null and userName != ''">
                 user_name = #{userName},
             </if>
-            <if test="address != null and address != ''">
+            <if test="address != null">
                 address = #{address},
             </if>
-            <if test="selectSetId != null">
-                select_set_id = #{selectSetId},
+            <if test="selectPackageId != null">
+                select_package_id = #{selectPackageId},
             </if>
             <if test="selectTs != null">
                 select_ts = #{selectTs},
@@ -54,6 +64,21 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="selectPackageName != null">
+                select_package_name = #{selectPackageName},
+            </if>
+            <if test="deliveryUserName != null">
+                delivery_user_name = #{deliveryUserName},
+            </if>
+            <if test="deliveryPhone != null">
+                delivery_phone = #{deliveryPhone},
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time = #{deliveryTime},
+            </if>
+            <if test="valid != null">
+                valid = #{valid},
             </if>
         </set>
         WHERE uid = #{uid}

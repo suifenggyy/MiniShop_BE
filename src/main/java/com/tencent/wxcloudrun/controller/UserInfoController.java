@@ -69,7 +69,6 @@ public class UserInfoController {
         userInfo.setUid(request.getUid());
         userInfo.setUserName(request.getUserName());
 
-
         boolean success = userInfoService.insertUserInfo(userInfo);
         if (success) {
             return ApiResponse.ok(userInfo);
@@ -136,6 +135,8 @@ public class UserInfoController {
         if (!request.getUserName().equals(existingUser.getUserName())) {
             return new ApiResponse(502, "username_not_match", null);
         }
+        // 反序列化到PostInfoMaps
+
 
         // 匹配则返回成功
         return new ApiResponse(200, "", existingUser);
@@ -157,6 +158,10 @@ public class UserInfoController {
 
         if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
             return new ApiResponse(2402, "username_empty", null);
+        }
+
+        if (request.getSelectPackageId() == null || request.getSelectPackageName() == null || request.getSelectPackageName().trim().isEmpty()) {
+            return new ApiResponse(504, "package_empty", null);
         }
 
         // 根据uid查询数据库
@@ -182,33 +187,15 @@ public class UserInfoController {
             }
         }
 
-        // 拼接配送信息作为地址
-        StringBuilder addressBuilder = new StringBuilder();
-        if (request.getDeliveryUserName() != null && !request.getDeliveryUserName().trim().isEmpty()) {
-            addressBuilder.append(request.getDeliveryUserName());
-        }
-        if (request.getDeliveryPhone() != null && !request.getDeliveryPhone().trim().isEmpty()) {
-            if (addressBuilder.length() > 0) {
-                addressBuilder.append("||");
-            }
-            addressBuilder.append(request.getDeliveryPhone());
-        }
-        if (request.getDeliveryAddress() != null && !request.getDeliveryAddress().trim().isEmpty()) {
-            if (addressBuilder.length() > 0) {
-                addressBuilder.append("||");
-            }
-            addressBuilder.append(request.getDeliveryAddress());
-        }
-
-        String newAddress = addressBuilder.toString();
-        if (newAddress.isEmpty()) {
-            return new ApiResponse(503, "配送信息不能为空", null);
-        }
-
         // 更新数据库中的address字段
         UserInfo updateUser = new UserInfo();
         updateUser.setUid(request.getUid());
-        updateUser.setAddress(newAddress);
+        updateUser.setAddress(request.getDeliveryAddress());
+        updateUser.setSelectPackageId(request.getSelectPackageId());
+        updateUser.setSelectPackageName(request.getSelectPackageName());
+        updateUser.setDeliveryUserName(request.getDeliveryUserName());
+        updateUser.setDeliveryPhone(request.getDeliveryPhone());
+        updateUser.setStatus("1"); // 设置状态为已提交
 
         boolean success = userInfoService.updateUserInfo(updateUser);
         if (success) {

@@ -18,6 +18,8 @@ public class UserInfoRequest {
 
     private String deliveryUserName;
 
-    private List<String> deliveryIds;
+    private Integer selectPackageId;
+
+    private String selectPackageName;
 }
 

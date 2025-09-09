@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class UserInfo implements Serializable {
@@ -14,11 +16,25 @@ public class UserInfo implements Serializable {
 
     private String address;
 
-    private Integer selectSetId;
+    private Integer selectPackageId;
 
     private LocalDateTime selectTs;
 
     private String postInfo;
 
+    private List<Map<String, String>> postInfoMaps;
+
     private String status;
+
+    private String selectPackageName;
+
+    private String deliveryUserName;
+
+    private String deliveryPhone;
+
+    private LocalDateTime deliveryTime;
+
+    private String valid;
+
+    private LocalDateTime gmtModify;
 }
