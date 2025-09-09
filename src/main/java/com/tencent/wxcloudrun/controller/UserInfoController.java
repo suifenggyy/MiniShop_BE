@@ -1,5 +1,7 @@
 package com.tencent.wxcloudrun.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.UserInfoRequest;
 import com.tencent.wxcloudrun.model.UserInfo;
@@ -12,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -135,8 +138,19 @@ public class UserInfoController {
         if (!request.getUserName().equals(existingUser.getUserName())) {
             return new ApiResponse(502, "username_not_match", null);
         }
-        // 反序列化到PostInfoMaps
 
+        // 反序列化postInfo到PostInfoMaps
+        try {
+            if (existingUser.getPostInfo() != null && !existingUser.getPostInfo().trim().isEmpty()) {
+                List<Map<String, String>> postInfoMaps = JSON.parseObject(
+                    existingUser.getPostInfo(),
+                    new TypeReference<List<Map<String, String>>>() {}
+                );
+                existingUser.setPostInfoMaps(postInfoMaps);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to parse postInfo for uid: {}, error: {}", existingUser.getUid(), e.getMessage());
+        }
 
         // 匹配则返回成功
         return new ApiResponse(200, "", existingUser);
