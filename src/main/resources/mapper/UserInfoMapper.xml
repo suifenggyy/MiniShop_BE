@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.UserInfoMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.UserInfo">
+        <id column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="select_set_id" property="selectSetId" jdbcType="INTEGER"/>
+        <result column="select_ts" property="selectTs" jdbcType="TIMESTAMP"/>
+        <result column="post_info" property="postInfo" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 根据ID查询用户信息 -->
+    <select id="getUserInfoById" resultMap="BaseResultMap">
+        SELECT uid, user_name, address, select_set_id, select_ts, post_info, status
+        FROM user_info
+        WHERE uid = #{uid}
+    </select>
+
+    <!-- 查询所有用户信息 -->
+    <select id="getAllUserInfo" resultMap="BaseResultMap">
+        SELECT uid, user_name, address, select_set_id, select_ts, post_info, status
+        FROM user_info
+        ORDER BY uid DESC
+    </select>
+
+    <!-- 插入用户信息 -->
+    <insert id="insertUserInfo">
+        INSERT INTO user_info (uid, user_name, address, select_set_id, select_ts, post_info, status)
+        VALUES (#{uid}, #{userName}, #{address}, #{selectSetId}, #{selectTs}, #{postInfo}, #{status})
+    </insert>
+
+    <!-- 更新用户信息 -->
+    <update id="updateUserInfo">
+        UPDATE user_info
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="selectSetId != null">
+                select_set_id = #{selectSetId},
+            </if>
+            <if test="selectTs != null">
+                select_ts = #{selectTs},
+            </if>
+            <if test="postInfo != null">
+                post_info = #{postInfo},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        WHERE uid = #{uid}
+    </update>
+
+    <!-- 删除用户信息 -->
+    <delete id="deleteUserInfo">
+        DELETE FROM user_info WHERE uid = #{uid}
+    </delete>
+
+</mapper>
