@@ -4,7 +4,9 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.UserInfoRequest;
+import com.tencent.wxcloudrun.model.SysParams;
 import com.tencent.wxcloudrun.model.UserInfo;
+import com.tencent.wxcloudrun.service.SysParamsService;
 import com.tencent.wxcloudrun.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +28,11 @@ public class UserInfoController {
 
     final UserInfoService userInfoService;
     final Logger logger;
+    final SysParamsService sysParamsService;
 
-    public UserInfoController(@Autowired UserInfoService userInfoService) {
+    public UserInfoController(@Autowired UserInfoService userInfoService, @Autowired SysParamsService sysParamsService) {
         this.userInfoService = userInfoService;
+        this.sysParamsService = sysParamsService;
         this.logger = LoggerFactory.getLogger(UserInfoController.class);
     }
 
@@ -150,6 +154,22 @@ public class UserInfoController {
             }
         } catch (Exception e) {
             logger.warn("Failed to parse postInfo for uid: {}, error: {}", existingUser.getUid(), e.getMessage());
+        }
+
+        int type = existingUser.getRole() != null ? existingUser.getRole() : 0;
+        Optional<SysParams> sysParamsOpt = sysParamsService.getSysParamsById(1);
+        if (sysParamsOpt.isPresent()) {
+            SysParams sysParams = sysParamsOpt.get();
+            // sysParams中信息转存到existingUser
+            existingUser.setShopText(sysParams.getShopText());
+            existingUser.setPackage1Name(sysParams.getPackage1Name());
+            existingUser.setPackage1Desc(sysParams.getPackage1Desc());
+            existingUser.setPackage2Name(sysParams.getPackage2Name());
+            existingUser.setPackage2Desc(sysParams.getPackage2Desc());
+            existingUser.setPackage1Img(sysParams.getPackage1Img());
+            existingUser.setPackage2Img(sysParams.getPackage2Img());
+            existingUser.setEndTime(sysParams.getEndTime());
+            existingUser.setContactHide(sysParams.getContactHide());
         }
 
         // 匹配则返回成功

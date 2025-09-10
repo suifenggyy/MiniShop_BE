@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.SysParamsMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.model.SysParams">
+        <id column="id" property="id" jdbcType="TINYINT"/>
+        <result column="shop_text" property="shopText" jdbcType="VARCHAR"/>
+        <result column="package1_name" property="package1Name" jdbcType="VARCHAR"/>
+        <result column="package1_desc" property="package1Desc" jdbcType="VARCHAR"/>
+        <result column="package2_name" property="package2Name" jdbcType="VARCHAR"/>
+        <result column="package2_desc" property="package2Desc" jdbcType="VARCHAR"/>
+        <result column="package1_img" property="package1Img" jdbcType="VARCHAR"/>
+        <result column="package2_img" property="package2Img" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="contact_hide" property="contactHide" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!-- 根据ID查询系统参数 -->
+    <select id="getSysParamsById" resultMap="BaseResultMap">
+        SELECT id, shop_text, package1_name, package1_desc, package2_name, package2_desc,
+               package1_img, package2_img, end_time, contact_hide
+        FROM sys_params
+        WHERE id = #{id}
+    </select>
+
+    <!-- 查询所有系统参数 -->
+    <select id="getAllSysParams" resultMap="BaseResultMap">
+        SELECT id, shop_text, package1_name, package1_desc, package2_name, package2_desc,
+               package1_img, package2_img, end_time, contact_hide
+        FROM sys_params
+        ORDER BY id
+    </select>
+
+</mapper>
