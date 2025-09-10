@@ -40,7 +40,7 @@ public class UserInfo implements Serializable {
 
     private LocalDateTime gmtModify;
 
-    private Integer role = 0;
+    private Integer role;
 
     // SysParams相关字段
     private String shopText;
