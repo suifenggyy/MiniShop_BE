@@ -231,6 +231,7 @@ public class UserInfoController {
         updateUser.setDeliveryPhone(request.getDeliveryPhone());
         updateUser.setStatus("2"); // 设置状态为已提交
         updateUser.setPostInfo("[{\"delivery_id\":\"464577584850772\"},{\"delivery_id\":\"77128481867058\"},{\"delivery_id\":\"YT8703670753704\"}]");
+        updateUser.setRole(existingUser.getRole());
 
         boolean success = userInfoService.updateUserInfo(updateUser);
         if (success) {
