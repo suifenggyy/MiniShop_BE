@@ -37,4 +37,6 @@ public class UserInfo implements Serializable {
     private String valid;
 
     private LocalDateTime gmtModify;
+
+    private Integer role;
 }

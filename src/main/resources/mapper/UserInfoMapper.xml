@@ -17,12 +17,13 @@
         <result column="delivery_time" property="deliveryTime" jdbcType="TIMESTAMP"/>
         <result column="valid" property="valid" jdbcType="VARCHAR"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <result column="role" property="role" jdbcType="TINYINT"/>
     </resultMap>
 
     <!-- 根据ID查询用户信息 -->
     <select id="getUserInfoById" resultMap="BaseResultMap">
         SELECT uid, user_name, address, select_package_id, select_ts, post_info, status,
-               select_package_name, delivery_user_name, delivery_phone, delivery_time, valid, gmt_modify
+               select_package_name, delivery_user_name, delivery_phone, delivery_time, valid, gmt_modify, role
         FROM user_info
         WHERE uid = #{uid}
     </select>
@@ -30,7 +31,7 @@
     <!-- 查询所有用户信息 -->
     <select id="getAllUserInfo" resultMap="BaseResultMap">
         SELECT uid, user_name, address, select_package_id, select_ts, post_info, status,
-               select_package_name, delivery_user_name, delivery_phone, delivery_time, valid, gmt_modify
+               select_package_name, delivery_user_name, delivery_phone, delivery_time, valid, gmt_modify, role
         FROM user_info
         ORDER BY uid DESC
     </select>
@@ -38,9 +39,9 @@
     <!-- 插入用户信息 -->
     <insert id="insertUserInfo">
         INSERT INTO user_info (uid, user_name, address, select_package_id, select_ts, post_info, status,
-                              select_package_name, delivery_user_name, delivery_phone, delivery_time, valid)
+                              select_package_name, delivery_user_name, delivery_phone, delivery_time, valid, role)
         VALUES (#{uid}, #{userName}, #{address}, #{selectPackageId}, #{selectTs}, #{postInfo}, #{status},
-                #{selectPackageName}, #{deliveryUserName}, #{deliveryPhone}, #{deliveryTime}, #{valid})
+                #{selectPackageName}, #{deliveryUserName}, #{deliveryPhone}, #{deliveryTime}, #{valid}, #{role})
     </insert>
 
     <!-- 更新用户信息 -->
@@ -79,6 +80,9 @@
             </if>
             <if test="valid != null">
                 valid = #{valid},
+            </if>
+            <if test="role != null">
+                role = #{role},
             </if>
         </set>
         WHERE uid = #{uid}
