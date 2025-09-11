@@ -80,4 +80,6 @@ public class UserInfo implements Serializable {
     private String mushroomPhone;
 
     private String otherPhone;
+
+    private String checkAlert;
 }

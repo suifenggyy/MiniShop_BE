@@ -49,4 +49,6 @@ public class SysParams implements Serializable {
     private String mushroomPhone;
 
     private String otherPhone;
+
+    private String checkAlert;
 }

@@ -182,6 +182,8 @@ public class UserInfoController {
             existingUser.setSystemPhone(sysParams.getSystemPhone());
             existingUser.setMushroomPhone(sysParams.getMushroomPhone());
             existingUser.setOtherPhone(sysParams.getOtherPhone());
+            // 新增的检查提醒字段
+            existingUser.setCheckAlert(sysParams.getCheckAlert());
         }
 
         // 匹配则返回成功
@@ -242,7 +244,7 @@ public class UserInfoController {
         updateUser.setDeliveryUserName(request.getDeliveryUserName());
         updateUser.setDeliveryPhone(request.getDeliveryPhone());
         updateUser.setStatus("2"); // 设置状态为已提交
-        updateUser.setPostInfo("[{\"delivery_id\":\"464577584850772\"},{\"delivery_id\":\"77128481867058\"},{\"delivery_id\":\"YT8703670753704\"}]");
+        updateUser.setPostInfo("[{\"delivery_id\":\"464577584850772\", \"item_name\":\"月饼\"},{\"delivery_id\":\"77128481867058\", \"item_name\":\"大米\"},{\"delivery_id\":\"YT8703670753704\", \"item_name\":\"榛蘑\"}]");
         updateUser.setRole(existingUser.getRole());
 
         boolean success = userInfoService.updateUserInfo(updateUser);

@@ -24,6 +24,7 @@
         <result column="system_phone" property="systemPhone" jdbcType="VARCHAR"/>
         <result column="mushroom_phone" property="mushroomPhone" jdbcType="VARCHAR"/>
         <result column="other_phone" property="otherPhone" jdbcType="VARCHAR"/>
+        <result column="checkAlert" property="checkAlert" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- 根据ID查询系统参数 -->
@@ -32,7 +33,7 @@
                package1_img, package2_img, end_time, contact_hide,
                delivery_id_title, delivery_id_text, delivery_name_title, delivery_name_text,
                delivery_address_title, delivery_address_text,
-               address_page_title, system_phone, mushroom_phone, other_phone
+               address_page_title, system_phone, mushroom_phone, other_phone, checkAlert
         FROM sys_params
         WHERE id = #{id}
     </select>
@@ -43,7 +44,7 @@
                package1_img, package2_img, end_time, contact_hide,
                delivery_id_title, delivery_id_text, delivery_name_title, delivery_name_text,
                delivery_address_title, delivery_address_text,
-               address_page_title, system_phone, mushroom_phone, other_phone
+               address_page_title, system_phone, mushroom_phone, other_phone, checkAlert
         FROM sys_params
         ORDER BY id
     </select>
