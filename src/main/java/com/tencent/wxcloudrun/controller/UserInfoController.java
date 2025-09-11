@@ -157,7 +157,7 @@ public class UserInfoController {
         }
 
         int type = existingUser.getRole() != null ? existingUser.getRole() : 0;
-        Optional<SysParams> sysParamsOpt = sysParamsService.getSysParamsById(1);
+        Optional<SysParams> sysParamsOpt = sysParamsService.getSysParamsById(type);
         if (sysParamsOpt.isPresent()) {
             SysParams sysParams = sysParamsOpt.get();
             // sysParams中信息转存到existingUser
