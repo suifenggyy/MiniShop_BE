@@ -60,4 +60,16 @@ public class UserInfo implements Serializable {
     private LocalDateTime endTime;
 
     private Integer contactHide;
+
+    private String deliveryIdTitle;
+
+    private String deliveryIdText;
+
+    private String deliveryNameTitle;
+
+    private String deliveryNameText;
+
+    private String deliveryAddressTitle;
+
+    private String deliveryAddressText;
 }

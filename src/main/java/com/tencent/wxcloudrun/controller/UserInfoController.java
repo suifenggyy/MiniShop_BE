@@ -170,6 +170,13 @@ public class UserInfoController {
             existingUser.setPackage2Img(sysParams.getPackage2Img());
             existingUser.setEndTime(sysParams.getEndTime());
             existingUser.setContactHide(sysParams.getContactHide());
+            // 新增的delivery相关字段
+            existingUser.setDeliveryIdTitle(sysParams.getDeliveryIdTitle());
+            existingUser.setDeliveryIdText(sysParams.getDeliveryIdText());
+            existingUser.setDeliveryNameTitle(sysParams.getDeliveryNameTitle());
+            existingUser.setDeliveryNameText(sysParams.getDeliveryNameText());
+            existingUser.setDeliveryAddressTitle(sysParams.getDeliveryAddressTitle());
+            existingUser.setDeliveryAddressText(sysParams.getDeliveryAddressText());
         }
 
         // 匹配则返回成功
