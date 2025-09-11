@@ -41,4 +41,12 @@ public class SysParams implements Serializable {
     private String deliveryAddressTitle;
 
     private String deliveryAddressText;
+
+    private String addressPageTitle;
+
+    private String systemPhone;
+
+    private String mushroomPhone;
+
+    private String otherPhone;
 }

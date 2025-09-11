@@ -177,6 +177,11 @@ public class UserInfoController {
             existingUser.setDeliveryNameText(sysParams.getDeliveryNameText());
             existingUser.setDeliveryAddressTitle(sysParams.getDeliveryAddressTitle());
             existingUser.setDeliveryAddressText(sysParams.getDeliveryAddressText());
+            // 新增的页面标题和电话字段
+            existingUser.setAddressPageTitle(sysParams.getAddressPageTitle());
+            existingUser.setSystemPhone(sysParams.getSystemPhone());
+            existingUser.setMushroomPhone(sysParams.getMushroomPhone());
+            existingUser.setOtherPhone(sysParams.getOtherPhone());
         }
 
         // 匹配则返回成功
