@@ -244,7 +244,15 @@ public class UserInfoController {
         updateUser.setDeliveryUserName(request.getDeliveryUserName());
         updateUser.setDeliveryPhone(request.getDeliveryPhone());
         updateUser.setStatus("2"); // 设置状态为已提交
-        updateUser.setPostInfo("[{\"delivery_id\":\"464577584850772\", \"item_name\":\"月饼\"},{\"delivery_id\":\"77128481867058\", \"item_name\":\"大米\"},{\"delivery_id\":\"YT8703670753704\", \"item_name\":\"榛蘑\"}]");
+        if (request.getSelectPackageId() == 1) {
+            updateUser.setPostInfo(
+                "[{\"delivery_id\":\"464577584850772\",\"item_name\":\"大米\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"杂粮\"},{\"delivery_id\":\"464577584850772\",\"item_name\":\"五样\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"榛蘑\"}]"
+            );
+        } else {
+            updateUser.setPostInfo(
+                "[{\"delivery_id\":\"464577584850772\",\"item_name\":\"枣|小米\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"黑豆油\"},{\"delivery_id\":\"464577584850772\",\"item_name\":\"五样\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"榛蘑\"}]"
+            );
+        }
         updateUser.setRole(existingUser.getRole());
 
         boolean success = userInfoService.updateUserInfo(updateUser);
