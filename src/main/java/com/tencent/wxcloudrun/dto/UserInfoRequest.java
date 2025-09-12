@@ -10,7 +10,8 @@ public class UserInfoRequest {
 
     private Long uid;
 
-    private String userName;
+    // 通过微信获取手机号
+    private String code;
 
     private String deliveryAddress;
 
@@ -21,5 +22,6 @@ public class UserInfoRequest {
     private Integer selectPackageId;
 
     private String selectPackageName;
+
 }
 

@@ -1,7 +1,14 @@
 package com.tencent.wxcloudrun.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
+
 import com.tencent.wxcloudrun.config.ApiResponse;
 import com.tencent.wxcloudrun.dto.UserInfoRequest;
 import com.tencent.wxcloudrun.model.SysParams;
@@ -11,13 +18,19 @@ import com.tencent.wxcloudrun.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.NumberUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * 用户信息控制器
@@ -26,6 +39,8 @@ import java.util.Optional;
 @RequestMapping("/api/userinfo")
 public class UserInfoController {
 
+    @Autowired
+    private RestTemplate restTemplate;
     final UserInfoService userInfoService;
     final Logger logger;
     final SysParamsService sysParamsService;
@@ -74,7 +89,6 @@ public class UserInfoController {
 
         UserInfo userInfo = new UserInfo();
         userInfo.setUid(request.getUid());
-        userInfo.setUserName(request.getUserName());
 
         boolean success = userInfoService.insertUserInfo(userInfo);
         if (success) {
@@ -84,33 +98,6 @@ public class UserInfoController {
         }
     }
 
-    /**
-     * 更新用户信息
-     * @param uid 用户ID
-     * @param request 用户信息请求体
-     * @return API response json
-     */
-    @PutMapping("/{uid}")
-    public ApiResponse updateUserInfo(@PathVariable Long uid, @RequestBody UserInfoRequest request) {
-        logger.info("/api/userinfo/{} put request", uid);
-
-        // 检查用户是否存在
-        Optional<UserInfo> existingUser = userInfoService.getUserInfoById(uid);
-        if (!existingUser.isPresent()) {
-            return ApiResponse.error("用户不存在");
-        }
-
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUid(uid);
-        userInfo.setUserName(request.getUserName());
-
-        boolean success = userInfoService.updateUserInfo(userInfo);
-        if (success) {
-            return ApiResponse.ok(userInfo);
-        } else {
-            return ApiResponse.error("更新用户失败");
-        }
-    }
 
     /**
      * 检查用户信息
@@ -119,18 +106,37 @@ public class UserInfoController {
      */
     @PostMapping("/checkUser")
     public ApiResponse checkUser(@RequestBody UserInfoRequest request) {
-        logger.info("/api/userinfo/checkUser post request, uid: {}, userName: {}", request.getUid(), request.getUserName());
+        logger.info("/api/userinfo/checkUser post request", JSON.toJSONString(request));
+        Long phoneNumber = request.getUid();
+        if (phoneNumber == null) {
+            if (StringUtils.isEmpty(request.getCode())) {
+                return new ApiResponse(401, "uid_empty", null);
+            }
+            // 使用code获取手机号
+            String phoneUrl = "https://api.weixin.qq.com/wxa/business/getuserphonenumber";
+            // 构建请求体
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("code", request.getCode());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> phoneResponse = restTemplate.postForEntity(phoneUrl, entity, String.class);
+            // 解析返回的手机号信息
+            JSONObject phoneObj = JSON.parseObject(phoneResponse.getBody());
+            // 根据微信接口返回的JSON结构解析手机号
+            // 正常返回示例：{ "errcode":0, "errmsg":"ok", "phone_info": { "phoneNumber":"xxxx", "purePhoneNumber": "xxxx", "countryCode": 86, "watermark": { "timestamp": 1637743194, "appid": "xxxx" } } }
+            if (phoneObj.getInteger("errcode") == 0) {
+                JSONObject phoneInfo = phoneObj.getJSONObject("phone_info");
+                phoneNumber = phoneInfo.getLong("phoneNumber");
+            } else {
+                // 处理错误
+                return new ApiResponse(401, "uid_empty", null);
+            }
 
-        if (request.getUid() == null) {
-            return new ApiResponse(401, "uid_empty", null);
-        }
-
-        if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
-            return new ApiResponse(402, "username_empty", null);
         }
 
         // 根据uid查询数据库
-        Optional<UserInfo> userInfo = userInfoService.getUserInfoById(request.getUid());
+        Optional<UserInfo> userInfo = userInfoService.getUserInfoById(phoneNumber);
 
         // 若不存在，返回错误信息
         if (!userInfo.isPresent()) {
@@ -139,9 +145,6 @@ public class UserInfoController {
 
         // 若存在，但是用户姓名与传入的不一致
         UserInfo existingUser = userInfo.get();
-        if (!request.getUserName().equals(existingUser.getUserName())) {
-            return new ApiResponse(502, "username_not_match", null);
-        }
 
         // 反序列化postInfo到PostInfoMaps
         try {
@@ -183,15 +186,11 @@ public class UserInfoController {
      */
     @PostMapping("/confirmDeliveryInfo")
     public ApiResponse confirmDeliveryInfo(@RequestBody UserInfoRequest request) {
-        logger.info("/api/userinfo/confirmDeliveryInfo post request, uid: {}, userName: {}",
-                   request.getUid(), request.getUserName());
+        logger.info("/api/userinfo/confirmDeliveryInfo post request",
+                   JSON.toJSONString(request));
 
         if (request.getUid() == null) {
             return new ApiResponse(2401, "uid_empty", null);
-        }
-
-        if (request.getUserName() == null || request.getUserName().trim().isEmpty()) {
-            return new ApiResponse(2402, "username_empty", null);
         }
 
         if (request.getSelectPackageId() == null || request.getSelectPackageName() == null || request.getSelectPackageName().trim().isEmpty()) {
@@ -208,15 +207,12 @@ public class UserInfoController {
 
         // 若存在，但是用户姓名与传入的不一致
         UserInfo existingUser = userInfo.get();
-        if (!request.getUserName().equals(existingUser.getUserName())) {
-            return new ApiResponse(2502, "username_not_match", null);
-        }
 
         // 检查status字段值是否大于10
         String status = existingUser.getStatus();
         if (status != null && !status.trim().isEmpty()) {
             int statusValue = Integer.parseInt(status);
-            if (statusValue > 0) {
+            if (statusValue > 10) {
                 return new ApiResponse(601, "status_error", status);
             }
         }
