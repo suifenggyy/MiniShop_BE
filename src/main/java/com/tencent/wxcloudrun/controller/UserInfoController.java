@@ -160,7 +160,7 @@ public class UserInfoController {
         }
 
         int type = existingUser.getRole() != null ? existingUser.getRole() : 0;
-        Optional<SysParams> sysParamsOpt = sysParamsService.getSysParamsById(1);
+        Optional<SysParams> sysParamsOpt = sysParamsService.getSysParamsById(type);
         if (sysParamsOpt.isPresent()) {
             SysParams sysParams = sysParamsOpt.get();
             // sysParams中信息转存到existingUser
@@ -173,6 +173,20 @@ public class UserInfoController {
             existingUser.setPackage2Img(sysParams.getPackage2Img());
             existingUser.setEndTime(sysParams.getEndTime());
             existingUser.setContactHide(sysParams.getContactHide());
+            // 新增的delivery相关字段
+            existingUser.setDeliveryIdTitle(sysParams.getDeliveryIdTitle());
+            existingUser.setDeliveryIdText(sysParams.getDeliveryIdText());
+            existingUser.setDeliveryNameTitle(sysParams.getDeliveryNameTitle());
+            existingUser.setDeliveryNameText(sysParams.getDeliveryNameText());
+            existingUser.setDeliveryAddressTitle(sysParams.getDeliveryAddressTitle());
+            existingUser.setDeliveryAddressText(sysParams.getDeliveryAddressText());
+            // 新增的页面标题和电话字段
+            existingUser.setAddressPageTitle(sysParams.getAddressPageTitle());
+            existingUser.setSystemPhone(sysParams.getSystemPhone());
+            existingUser.setMushroomPhone(sysParams.getMushroomPhone());
+            existingUser.setOtherPhone(sysParams.getOtherPhone());
+            // 新增的检查提醒字段
+            existingUser.setCheckAlert(sysParams.getCheckAlert());
         }
 
         // 匹配则返回成功
@@ -226,7 +240,15 @@ public class UserInfoController {
         updateUser.setDeliveryUserName(request.getDeliveryUserName());
         updateUser.setDeliveryPhone(request.getDeliveryPhone());
         updateUser.setStatus("2"); // 设置状态为已提交
-        updateUser.setPostInfo("[{\"delivery_id\":\"464577584850772\"},{\"delivery_id\":\"77128481867058\"},{\"delivery_id\":\"YT8703670753704\"}]");
+        if (request.getSelectPackageId() == 1) {
+            updateUser.setPostInfo(
+                "[{\"delivery_id\":\"464577584850772\",\"item_name\":\"大米\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"杂粮\"},{\"delivery_id\":\"464577584850772\",\"item_name\":\"五样\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"榛蘑\"}]"
+            );
+        } else {
+            updateUser.setPostInfo(
+                "[{\"delivery_id\":\"464577584850772\",\"item_name\":\"枣|小米\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"黑豆油\"},{\"delivery_id\":\"464577584850772\",\"item_name\":\"五样\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"榛蘑\"}]"
+            );
+        }
         updateUser.setRole(existingUser.getRole());
 
         boolean success = userInfoService.updateUserInfo(updateUser);

@@ -29,4 +29,26 @@ public class SysParams implements Serializable {
     private LocalDateTime endTime;
 
     private Integer contactHide;
+
+    private String deliveryIdTitle;
+
+    private String deliveryIdText;
+
+    private String deliveryNameTitle;
+
+    private String deliveryNameText;
+
+    private String deliveryAddressTitle;
+
+    private String deliveryAddressText;
+
+    private String addressPageTitle;
+
+    private String systemPhone;
+
+    private String mushroomPhone;
+
+    private String otherPhone;
+
+    private String checkAlert;
 }
