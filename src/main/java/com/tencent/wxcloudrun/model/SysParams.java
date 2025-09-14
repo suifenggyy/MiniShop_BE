@@ -55,4 +55,6 @@ public class SysParams implements Serializable {
     private String package1Details;
 
     private String package2Details;
+
+    private String backimg;
 }

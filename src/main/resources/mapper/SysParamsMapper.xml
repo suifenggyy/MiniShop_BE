@@ -27,6 +27,7 @@
         <result column="checkAlert" property="checkAlert" jdbcType="VARCHAR"/>
         <result column="package1_details" property="package1Details" jdbcType="LONGVARCHAR"/>
         <result column="package2_details" property="package2Details" jdbcType="LONGVARCHAR"/>
+        <result column="backimg" property="backimg" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- 根据ID查询系统参数 -->
@@ -36,7 +37,7 @@
                delivery_id_title, delivery_id_text, delivery_name_title, delivery_name_text,
                delivery_address_title, delivery_address_text,
                address_page_title, system_phone, mushroom_phone, other_phone, checkAlert,
-               package1_details, package2_details
+               package1_details, package2_details, backimg
         FROM sys_params
         WHERE id = #{id}
     </select>
@@ -48,7 +49,7 @@
                delivery_id_title, delivery_id_text, delivery_name_title, delivery_name_text,
                delivery_address_title, delivery_address_text,
                address_page_title, system_phone, mushroom_phone, other_phone, checkAlert,
-               package1_details, package2_details
+               package1_details, package2_details, backimg
         FROM sys_params
         ORDER BY id
     </select>

@@ -190,6 +190,8 @@ public class UserInfoController {
             // 新增的套餐详情字段
             existingUser.setPackage1Details(sysParams.getPackage1Details());
             existingUser.setPackage2Details(sysParams.getPackage2Details());
+            // 新增的背景图片字段
+            existingUser.setBackimg(sysParams.getBackimg());
         }
 
         // 匹配则返回成功
