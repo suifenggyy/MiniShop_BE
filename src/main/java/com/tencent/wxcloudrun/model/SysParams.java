@@ -51,4 +51,8 @@ public class SysParams implements Serializable {
     private String otherPhone;
 
     private String checkAlert;
+
+    private String package1Details;
+
+    private String package2Details;
 }

@@ -106,7 +106,7 @@ public class UserInfoController {
      */
     @PostMapping("/checkUser")
     public ApiResponse checkUser(@RequestBody UserInfoRequest request) {
-        logger.info("/api/userinfo/checkUser post request", JSON.toJSONString(request));
+        logger.info("/api/userinfo/checkUser post request: {}", JSON.toJSONString(request));
         Long phoneNumber = request.getUid();
         if (phoneNumber == null) {
             if (StringUtils.isEmpty(request.getCode())) {
@@ -187,6 +187,9 @@ public class UserInfoController {
             existingUser.setOtherPhone(sysParams.getOtherPhone());
             // 新增的检查提醒字段
             existingUser.setCheckAlert(sysParams.getCheckAlert());
+            // 新增的套餐详情字段
+            existingUser.setPackage1Details(sysParams.getPackage1Details());
+            existingUser.setPackage2Details(sysParams.getPackage2Details());
         }
 
         // 匹配则返回成功
@@ -200,7 +203,7 @@ public class UserInfoController {
      */
     @PostMapping("/confirmDeliveryInfo")
     public ApiResponse confirmDeliveryInfo(@RequestBody UserInfoRequest request) {
-        logger.info("/api/userinfo/confirmDeliveryInfo post request",
+        logger.info("/api/userinfo/confirmDeliveryInfo post request: {}",
                    JSON.toJSONString(request));
 
         if (request.getUid() == null) {
