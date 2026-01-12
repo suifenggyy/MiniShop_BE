@@ -246,6 +246,7 @@ public class UserInfoController {
         updateUser.setDeliveryPhone(request.getDeliveryPhone());
         updateUser.setStatus("1"); // 设置状态为已提交
         if (existingUser.getRole() < 0) {
+            updateUser.setStatus("2"); // 设置状态为已发货
             updateUser.setPostInfo(
                 "[{\"delivery_id\":\"464577584850772\",\"item_name\":\"大米\"},{\"delivery_id\":\"77128481867058\",\"item_name\":\"糕点\"},{\"delivery_id\":\"464577584850772\",\"item_name\":\"五样\"}]"
             );
